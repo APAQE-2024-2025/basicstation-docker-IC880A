@@ -1,12 +1,8 @@
-version: '2.0'
-
 services:
-
   basicstation:
-    
     # Use pre-defined image
     image: xoseperez/basicstation:latest
-    
+
     # Or comment out image and build it yourself
     #build:
     #  context: .
@@ -14,17 +10,16 @@ services:
     #    ARCH: aarch64
     #    REMOTE_TAG: v2.0.6
     #    VARIANT: std
-
     container_name: basicstation
     restart: unless-stopped
-    privileged: true         # set this to true or define the required devices to share with the container under the `devices` tag below
-    network_mode: host       # required to read host interface MAC instead of virtual one, you don't need this if you set the GATEWAY_EUI manually
+    privileged: true # set this to true or define the required devices to share with the container under the `devices` tag below
+    network_mode: host # required to read host interface MAC instead of virtual one, you don't need this if you set the GATEWAY_EUI manually
 
     #devices:
     #  - /dev/ttyACM0         # share the device where your concentrator is connected to or set privileged to true above
     #  - /dev/spidev0.0       # share the device where your concentrator is connected to or set privileged to true above
     #  - /dev/gpiochip0       # allow the container to access the GPIO (via gpiod) if using an SPI concentrator or set privileged to true above
-    
+
     #volumes:
     #  - ./config:/app/config
 
@@ -37,15 +32,20 @@ services:
     #  - cups.trust
     #  - cups.crt
     #  - cups.key
-       
-    #environment:
 
+    environment:
+      MODEL: "SX1301"
+      DEVICE: "/dev/spidev0.0"
+      SPI_SPEED: 2000000
+      USE_LIBGPIOD: 1 # set to 1 by default for Raspberry Pi 5
+      RESET_GPIO: 25
+
+      TC_KEY: "..." # Enter the generated api key from TTN
       # To select your concentrator you have 3 options:
       # Option 1: set the MODEL to the device model number (i.e. RAK7371)
       # Option 2: set the MODEL to the concentrator model number (i.e. RAK5146, WM1302, R11E-LR8...)
       # Option 2: set the MODEL to the concentrator chip (i.e. SX1303)
       #MODEL: "RAK5146"
-      #MODEL: "SX1303"
 
       # The concentrator design is usually taken from the MODEL (see https://doc.sm.tc/station):
       # * V2 design was used with SX1301 and SX1308 concentrators with SPI interface
@@ -56,15 +56,14 @@ services:
       #DESIGN: "PICOCELL"
       #DESIGN: "CORECELL"
 
-      # The interface the concentrator uses, either "SPI", "USB", "NET" or "AUTO". 
+      # The interface the concentrator uses, either "SPI", "USB", "NET" or "AUTO".
       # Use "AUTO" coupled with device auto-discover feature below. Defaults to "SPI".
       #INTERFACE: "AUTO"
       #INTERFACE: "NET"
 
-      # If you have the concentrator connected to a different port than the default one 
+      # If you have the concentrator connected to a different port than the default one
       # ("/dev/spidev0.0" for SPI, "/dev/ttyACM0" for USB or "<hostip>:3333" for NET) you can define here.
       # Set it to "AUTO" for auto-discover (works only with Corecell and Picocell concentrators).
-      #DEVICE: "/dev/spidev0.0"
       #DEVICE: "/dev/ttyACM0"
       #DEVICE: "192.168.1.86:3333"
       #DEVICE: "AUTO"
@@ -74,15 +73,12 @@ services:
       #RADIO_NUM: 1
 
       # GPIO to reset SPI concentrators (these are the defaults)
-      #USE_LIBGPIOD: 0 # set to 1 by default for Raspberry Pi 5
       #GPIO_CHIP: "gpiochip0" # set to "gpiochip4" by default for Raspberry Pi 5
-      #RESET_GPIO: 17
       #POWER_EN_GPIO: 0
       #POWER_EN_LOGIC:1
 
       # Problems with an SPI concentrator are sometimes related to the bus speed,
       # you can set a different one this way
-      #SPI_SPEED: 8000000
 
       # Each gateway is identified by its Gateway EUI (8 bytes in hex format)
       # The procedure to defined that EUI is as follows:
@@ -100,7 +96,7 @@ services:
       # If the WHITELIST_NETIDS list is not empty, only uplinks from the listed NetID will be allowed.
       # The list can be comma or space separated. NetIDs are 3 bytes long and can be in decimal or hex (starting with 0x).
       #WHITELIST_NETIDS: 0x000013,0xC00071
-      
+
       # If the WHITELIST_OUIS list is not empty, only join requests from devices by the listed OUI will be allowed.
       # The OUI of the device is represented by the first 3 bytes of the DevEUI.
       # The list can be comma or space separated. OUIs are 3 bytes long and can be in decimal or hex (starting with 0x).
@@ -111,7 +107,7 @@ services:
       # ------------------------------------------------
 
       # Defines the FILE or FIFO that emits NMEA messages from the GNSS receiver.
-      # Station uses this to extract LAT/LON coordinates of the gateway. 
+      # Station uses this to extract LAT/LON coordinates of the gateway.
       #GPS_DEV: "/dev/ttyAMA0"
       #GPS_DEV: "/dev/ttyS0"
 
@@ -119,7 +115,7 @@ services:
       # TTI/TTN specific
       # ------------------------------------------------
 
-      # The default LNS server is the European TTN server. 
+      # The default LNS server is the European TTN server.
       # If you still want to use TTN but a different region you can set it this way,
       # this will create the TC_URI and CUPS_URI URLs for the corresponding TTN server
       #TTS_REGION: "au1"
@@ -146,10 +142,9 @@ services:
       # Some servers will require you to include the client certificate:
       #TC_CRT: "-----BEGIN CERTIFICATE-----MIICUzCCATugAwIBAgIUM3K60JYw9eRjxXly27wVD0w6QF0wDQYJKoZIhvcNAQELBQAwGDEWMBQG...."
 
-      # Finally, you need to provide the key for the gateway, 
+      # Finally, you need to provide the key for the gateway,
       # this can either be the client key for the client certificate above or
       # the API key provided by the LNS (if no client certificate)
-      #TC_KEY: "NNSXS.O27GW2MQK..."
       #TC_KEY: "-----BEGIN PRIVATE KEY-----MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgDO/pLoHo5zF4Rcok7HYT3cG2...."
 
       # ------------------------------------------------
@@ -168,7 +163,7 @@ services:
       # Some servers will require you to include the client certificate:
       #CUPS_CRT: "-----BEGIN CERTIFICATE-----MIICUzCCATugAwIBAgIUKGWM6utODCeqLXjXV1Nb4BhEHoYwDQYJKoZIhvcNAQE...."
 
-      # Finally, you need to provide the key for the gateway, 
+      # Finally, you need to provide the key for the gateway,
       # this can either be the client key for the client certificate above or
       # the API key provided by the LNS (if no client certificate)
       #CUPS_KEY: "NNSXS.SLOC764GN3....."
@@ -197,10 +192,9 @@ services:
       # * edit basic gateway settings
       # * create a gateway under the user account
       #TTS_PERSONAL_KEY: "NNSXS.E2CK53N....."
-      
+
       # The Things Stack frequency plan (https://www.thethingsindustries.com/docs/reference/frequency-plans/)
       #TTS_FREQUENCY_PLAN_ID: "EU_863_870_TTN"
-
 #secrets:
 #  tc.uri:
 #    file: tc.uri
@@ -218,4 +212,4 @@ services:
 #    file: cups.crt
 #  cups.key:
 #    file: cups.key
-  
+
