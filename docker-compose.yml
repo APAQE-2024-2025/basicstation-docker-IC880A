@@ -40,7 +40,7 @@ services:
       USE_LIBGPIOD: 1 # set to 1 by default for Raspberry Pi 5
       RESET_GPIO: 25
 
-      TC_KEY: ${TC_KEY} # Enter the generated api key from TTN
+      TC_KEY: "..." # Enter the generated api key from TTN
       # To select your concentrator you have 3 options:
       # Option 1: set the MODEL to the device model number (i.e. RAK7371)
       # Option 2: set the MODEL to the concentrator model number (i.e. RAK5146, WM1302, R11E-LR8...)
