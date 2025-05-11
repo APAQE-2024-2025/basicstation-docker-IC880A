@@ -38,8 +38,8 @@ services:
       DEVICE: "/dev/spidev0.0"
       SPI_SPEED: 2000000
       USE_LIBGPIOD: 1 # set to 1 by default for Raspberry Pi 5
-      RESET_GPIO: 25
-
+      RESET_GPIO: 25 # Enter the RESET gpio pin, can differ from one Raspberry Pi to another
+    
       TC_KEY: "..." # Enter the generated api key from TTN
       # To select your concentrator you have 3 options:
       # Option 1: set the MODEL to the device model number (i.e. RAK7371)
